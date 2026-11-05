@@ -1,5 +1,7 @@
 # Platform MCP Control Plane — Redis Lab
 
+[![CI](https://github.com/dineshkkrishnan/platform-mcp-control-plane/actions/workflows/tests.yml/badge.svg)](https://github.com/dineshkkrishnan/platform-mcp-control-plane/actions/workflows/tests.yml)
+
 A working **MCP stdio server** that separates observation, proposals, operator approval and bounded execution. Built with the official Python MCP SDK, with an in-memory backend for demos and a Redis adapter for a local disposable lab.
 
 Independent portfolio project by Dinesh Kumar Krishnan, prepared with AI assistance. No production infrastructure, employer credentials or live AI model is included.
@@ -92,3 +94,17 @@ Tests cover dry runs, approval/replay, roles, namespace restrictions, expiry, pr
 Next: authenticated operator identities, isolated approval service, Redis ACLs, externally anchored audit records, idempotent outcome reconciliation, and evaluation with the companion [Agentic SRE Evaluation Lab](https://github.com/dineshkkrishnan/agentic-sre-evaluation-lab).
 
 [Official MCP Python SDK v1 documentation](https://py.sdk.modelcontextprotocol.io/v1/). This lab pins SDK 1.30.0 to keep its tested FastMCP v1 interface stable.
+
+## Quality gates and contribution workflow
+
+From the **repository root**, use a Python 3.11+ environment:
+
+```bash
+python -m pip install -r requirements.txt
+python -m compileall -q control.py server.py approve.py client_demo.py tests
+python -m unittest discover -s tests -v
+```
+
+CI runs on pushes and pull requests across Python 3.11–3.13 with a disposable Redis service, exercising unit, real MCP stdio, and Redis integration tests. Local test runs without `LAB_TEST_REDIS_URL` **skip the Redis integration test**; they do not prove Redis functionality. Never point tests or the demo at production Redis instances.
+
+Contributions should be small and reviewable. For policy or approval changes, include negative tests (unauthorized role, expired approval, replay, stale value) as well as a successful path. Describe the trust boundary affected and the verification command in the PR. Do not commit live credentials, sensitive key contents or employer configuration. Passing tests does not make this demonstration a production-ready authorization service.
